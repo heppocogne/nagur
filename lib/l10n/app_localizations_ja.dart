@@ -10,4 +10,7 @@ class L10nJa extends L10n {
 
   @override
   String get appTitle => 'Nagur: 殴り書きメモ帳';
+
+  @override
+  String get untitled => '無題';
 }

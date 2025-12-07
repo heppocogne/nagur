@@ -102,6 +102,12 @@ abstract class L10n {
   /// In ja, this message translates to:
   /// **'Nagur: 殴り書きメモ帳'**
   String get appTitle;
+
+  /// No description provided for @untitled.
+  ///
+  /// In ja, this message translates to:
+  /// **'無題'**
+  String get untitled;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {
