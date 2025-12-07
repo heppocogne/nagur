@@ -9,12 +9,14 @@ part of 'system.dart';
 System _$SystemFromJson(Map<String, dynamic> json) => System()
   ..currentMemoUuid = json['currentMemoUuid'] as String?
   ..showDeleteConfirmation = json['showDeleteConfirmation'] as bool
+  ..isMarkdownView = json['isMarkdownView'] as bool
   ..language = json['language'] as String
   ..exportLocation = json['exportLocation'] as String;
 
 Map<String, dynamic> _$SystemToJson(System instance) => <String, dynamic>{
   'currentMemoUuid': instance.currentMemoUuid,
   'showDeleteConfirmation': instance.showDeleteConfirmation,
+  'isMarkdownView': instance.isMarkdownView,
   'language': instance.language,
   'exportLocation': instance.exportLocation,
 };

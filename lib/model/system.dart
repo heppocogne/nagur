@@ -14,6 +14,7 @@ class System {
 
   String? currentMemoUuid;
   bool showDeleteConfirmation = true;
+  bool isMarkdownView = false;
   late String language;
   late String exportLocation;
 
@@ -35,6 +36,7 @@ class System {
       var system = System.fromJson(jsonDecode(await file.readAsString()));
       currentMemoUuid = system.currentMemoUuid;
       showDeleteConfirmation = system.showDeleteConfirmation;
+      isMarkdownView = system.isMarkdownView;
       language = system.language;
       exportLocation = system.exportLocation;
     } else {

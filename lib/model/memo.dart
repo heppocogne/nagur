@@ -17,6 +17,7 @@ class Memo {
   late DateTime updated;
   String? title;
   String? content;
+  bool isFavorite = false;
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   late String uuid;
@@ -33,15 +34,17 @@ class Memo {
   }
 }
 
-final memoProvider = FutureProvider.family<Memo, String>((ref, uuid) async {
-  final directory = await getApplicationSupportDirectory();
-  final file = File('${directory.path}/$uuid.json');
+final memoProvider = FutureProvider.family<Memo, String?>((ref, uuid) async {
+  if (uuid != null) {
+    final directory = await getApplicationSupportDirectory();
+    final file = File('${directory.path}/$uuid.json');
 
-  if (await file.exists()) {
-    final jsonString = await file.readAsString();
-    if (jsonString.isNotEmpty) {
-      final json = jsonDecode(jsonString);
-      return Memo.fromJson(json as Map<String, dynamic>);
+    if (await file.exists()) {
+      final jsonString = await file.readAsString();
+      if (jsonString.isNotEmpty) {
+        final json = jsonDecode(jsonString);
+        return Memo.fromJson(json as Map<String, dynamic>);
+      }
     }
   }
 
