@@ -50,8 +50,8 @@ class Memo {
 @riverpod
 class MemoNotifier extends _$MemoNotifier {
   Future<File?> _getMemoFile() async {
-    if (uuid == null) {
-      final directory = await getApplicationDocumentsDirectory();
+    if (uuid != null) {
+      final directory = await getApplicationSupportDirectory();
       return File('${directory.path}/$uuid.json');
     } else {
       return null;
@@ -68,31 +68,29 @@ class MemoNotifier extends _$MemoNotifier {
   }
 
   Future<String> initialize() async {
-    if (uuid != null) {
-      final file = await _getMemoFile();
-      if (file != null && await file.exists()) {
-        final jsonString = await file.readAsString();
-        if (jsonString.isNotEmpty) {
-          state = Memo.fromJson(jsonDecode(jsonString));
-          return state.uuid;
-        }
+    final file = await _getMemoFile();
+    if (file != null && await file.exists()) {
+      final jsonString = await file.readAsString();
+      if (jsonString.isNotEmpty) {
+        var memo = Memo.fromJson(jsonDecode(jsonString));
+        state = memo.copyWith(uuid: uuid);
       }
+    } else {
+      state = state.copyWith(uuid: uuid);
     }
 
-    state = build(null);
+    Logger().d('uuid=$uuid');
     return state.uuid;
   }
 
   Future<void> save() async {
-    final memo = state.copyWith(updated: DateTime.now());
     final file = await _getMemoFile();
     if (file != null) {
-      await file.writeAsString(jsonEncode(memo.toJson()));
+      state = state.copyWith(updated: DateTime.now());
+      await file.writeAsString(jsonEncode(state.toJson()));
     } else {
       Logger().w('file is null, skip saving');
     }
-
-    state = memo;
   }
 
   Future<void> updateTitle(String title) async {

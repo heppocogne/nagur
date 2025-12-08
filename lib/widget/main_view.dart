@@ -86,13 +86,11 @@ class _MainViewState extends ConsumerState<MainView> {
                 ref
                     .read(memoProvider(data.currentMemoUuid).notifier)
                     .initialize()
-                    .then((uuid) {
-                      if (uuid != null) {
-                        ref
-                            .read(systemProvider.notifier)
-                            .updateCurrentMemoUuid(uuid);
-                      }
-                    });
+                    .then(
+                      (uuid) => ref
+                          .read(systemProvider.notifier)
+                          .updateCurrentMemoUuid(uuid),
+                    );
               });
             }
 
