@@ -21,9 +21,21 @@ class _MainViewState extends ConsumerState {
     AppBar appBar(String? uuid) => AppBar(
       leading: IconButton(onPressed: () {}, icon: Icon(Icons.menu)),
       centerTitle: true,
+      backgroundColor: Colors.blue,
+      foregroundColor: Colors.white,
       title: TextFormField(
         initialValue:
             ref.watch(memoProvider(uuid)).title ?? L10n.of(context)!.untitled,
+        style: const TextStyle(color: Colors.white),
+        cursorColor: Colors.white,
+        decoration: const InputDecoration(
+          enabledBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: Colors.white),
+          ),
+          focusedBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: Colors.white),
+          ),
+        ),
       ),
       actions: [
         IconButton(onPressed: () {}, icon: Icon(Icons.arrow_downward)), // 仮
