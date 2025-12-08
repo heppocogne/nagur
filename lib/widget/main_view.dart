@@ -7,6 +7,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:logger/logger.dart';
 
 import 'package:nagur/l10n/app_localizations.dart';
+import 'package:nagur/model/history.dart';
 import 'package:nagur/model/memo.dart';
 import 'package:nagur/model/system.dart';
 
@@ -33,9 +34,20 @@ Future<void> _deleteCurrentMemo(BuildContext context, WidgetRef ref) async {
   await ref.read(memoProvider(uuid).notifier).delete();
 }
 
-void _afterDelete(BuildContext context, WidgetRef ref) {
-  // NOTE: 仮実装。最後に編集したメモを表示するようにし、無ければ新規作成。
-  _createNewMemo(context, ref);
+Future<void> _afterDelete(BuildContext context, WidgetRef ref) async {
+  // NOTE: 最後に編集したメモを表示する。無ければ新規作成。
+  final historyList = await ref.refresh(historyListProvider.future);
+
+  if (historyList.isEmpty) {
+    if (context.mounted) {
+      _createNewMemo(context, ref);
+    } else {
+      Logger().e('context is not mountted');
+    }
+  } else {
+    final latestHistory = historyList.last;
+    ref.read(systemProvider.notifier).updateCurrentMemoUuid(latestHistory.uuid);
+  }
 }
 
 class MainView extends ConsumerWidget {
@@ -114,9 +126,11 @@ class MainView extends ConsumerWidget {
                               child: Text(L10n.of(context)!.delete),
                               onPressed: () {
                                 Navigator.of(context).pop();
-                                _deleteCurrentMemo(context, ref).then((_) {
+                                _deleteCurrentMemo(context, ref).then((
+                                  _,
+                                ) async {
                                   if (context.mounted) {
-                                    _afterDelete(context, ref);
+                                    await _afterDelete(context, ref);
                                   } else {
                                     Logger().e('context is not mounted');
                                   }
@@ -128,9 +142,9 @@ class MainView extends ConsumerWidget {
                       },
                     );
                   } else {
-                    _deleteCurrentMemo(context, ref).then((_) {
+                    _deleteCurrentMemo(context, ref).then((_) async {
                       if (context.mounted) {
-                        _afterDelete(context, ref);
+                        await _afterDelete(context, ref);
                       } else {
                         Logger().e('context is not mounted');
                       }
