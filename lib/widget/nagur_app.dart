@@ -5,7 +5,6 @@ import 'package:logger/logger.dart';
 import 'package:nagur/l10n/app_localizations.dart';
 import 'package:nagur/widget/main_view.dart';
 import 'package:nagur/model/system.dart';
-import 'package:nagur/model/memo.dart';
 
 class NagurApp extends ConsumerStatefulWidget {
   const NagurApp({super.key});
@@ -21,21 +20,12 @@ class _NagurAppState extends ConsumerState {
   void initState() {
     super.initState();
 
+    // システムデータ読み込み
     final system = ref.read(systemProvider);
     system.when(
       loading: () {},
       data: (data) {
         Logger().d(data.toJson());
-        var memo = ref.read(memoProvider(data.currentMemoUuid));
-        memo.when(
-          loading: () {},
-          data: (data) {
-            Logger().d(data.toJson());
-          },
-          error: (error, stackTrace) {
-            Logger().e('$error\n$stackTrace');
-          },
-        );
       },
       error: (error, stackTrace) {
         Logger().e('$error\n$stackTrace');
