@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:logger/logger.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
@@ -48,9 +49,13 @@ class Memo {
 
 @riverpod
 class MemoNotifier extends _$MemoNotifier {
-  Future<File> _getMemoFile(String uuid) async {
-    final directory = await getApplicationDocumentsDirectory();
-    return File('${directory.path}/$uuid.json');
+  Future<File?> _getMemoFile() async {
+    if (uuid == null) {
+      final directory = await getApplicationDocumentsDirectory();
+      return File('${directory.path}/$uuid.json');
+    } else {
+      return null;
+    }
   }
 
   @override
@@ -62,32 +67,32 @@ class MemoNotifier extends _$MemoNotifier {
     }
   }
 
-  Future<void> load() async {
+  Future<String> initialize() async {
     if (uuid != null) {
-      final file = await _getMemoFile(uuid!);
-      if (await file.exists()) {
+      final file = await _getMemoFile();
+      if (file != null && await file.exists()) {
         final jsonString = await file.readAsString();
         if (jsonString.isNotEmpty) {
           state = Memo.fromJson(jsonDecode(jsonString));
-          return;
+          return state.uuid;
         }
       }
     }
 
-    state = Memo(uuid: Uuid().v4());
+    state = build(null);
+    return state.uuid;
   }
 
   Future<void> save() async {
     final memo = state.copyWith(updated: DateTime.now());
-    final file = await _getMemoFile(state.uuid);
-    await file.writeAsString(jsonEncode(memo.toJson()));
+    final file = await _getMemoFile();
+    if (file != null) {
+      await file.writeAsString(jsonEncode(memo.toJson()));
+    } else {
+      Logger().w('file is null, skip saving');
+    }
 
     state = memo;
-  }
-
-  void updateUuid(String uuid) {
-    state = state.copyWith(uuid: uuid);
-    return;
   }
 
   Future<void> updateTitle(String title) async {

@@ -17,99 +17,121 @@ class MainView extends ConsumerStatefulWidget {
   }
 }
 
-class _MainViewState extends ConsumerState {
+class _MainViewState extends ConsumerState<MainView> {
   @override
   Widget build(BuildContext context) {
-    AppBar appBar(SystemState? system) => AppBar(
-      leading: IconButton(onPressed: () {}, icon: Icon(Icons.menu)),
-      centerTitle: true,
-      backgroundColor: Colors.blue,
-      foregroundColor: Colors.white,
-      title: TextFormField(
-        initialValue: system != null
-            ? ref.watch(memoProvider(system.currentMemoUuid)).title ??
-                  L10n.of(context)!.untitled
-            : L10n.of(context)!.untitled,
-        style: const TextStyle(color: Colors.white),
-        cursorColor: Colors.white,
-        decoration: const InputDecoration(
-          enabledBorder: UnderlineInputBorder(
-            borderSide: BorderSide(color: Colors.white),
-          ),
-          focusedBorder: UnderlineInputBorder(
-            borderSide: BorderSide(color: Colors.white),
-          ),
-        ),
-      ),
-      actions: [
-        IconButton(
-          onPressed: () {
-            ref.read(systemProvider.notifier).toggleMarkdownView();
-          },
-          icon: SvgPicture.asset(
-            system == null || !system.isMarkdownView
-                ? 'assets/markdown_white.svg'
-                : 'assets/text_white.svg',
-            width: 24,
-            height: 24,
+    AppBar appBar(SystemState? system) {
+      Logger().d('uuid=${system?.currentMemoUuid}');
+
+      return AppBar(
+        leading: IconButton(onPressed: () {}, icon: Icon(Icons.menu)),
+        centerTitle: true,
+        backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
+        title: TextFormField(
+          initialValue: system != null
+              ? ref.watch(memoProvider(system.currentMemoUuid)).title ??
+                    L10n.of(context)!.untitled
+              : L10n.of(context)!.untitled,
+          style: const TextStyle(color: Colors.white),
+          cursorColor: Colors.white,
+          decoration: const InputDecoration(
+            enabledBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: Colors.white),
+            ),
+            focusedBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: Colors.white),
+            ),
           ),
         ),
-        IconButton(
-          onPressed: () {
-            if (system != null) {
-              ref
-                  .read(memoProvider(system.currentMemoUuid).notifier)
-                  .toggleFavorite();
-            }
-          },
-          icon: Icon(
-            system != null &&
-                    ref.watch(memoProvider(system.currentMemoUuid)).isFavorite
-                ? Icons.star
-                : Icons.star_border,
+        actions: [
+          IconButton(
+            onPressed: () {
+              ref.read(systemProvider.notifier).toggleMarkdownView();
+            },
+            icon: SvgPicture.asset(
+              system == null || !system.isMarkdownView
+                  ? 'assets/markdown_white.svg'
+                  : 'assets/text_white.svg',
+              width: 24,
+              height: 24,
+            ),
           ),
-        ),
-        IconButton(onPressed: () {}, icon: Icon(Icons.delete)),
-      ],
-    );
+          IconButton(
+            onPressed: () {
+              if (system != null) {
+                ref
+                    .read(memoProvider(system.currentMemoUuid).notifier)
+                    .toggleFavorite();
+              }
+            },
+            icon: Icon(
+              system != null &&
+                      ref.watch(memoProvider(system.currentMemoUuid)).isFavorite
+                  ? Icons.star
+                  : Icons.star_border,
+            ),
+          ),
+          IconButton(onPressed: () {}, icon: Icon(Icons.delete)),
+        ],
+      );
+    }
 
     return ref
         .watch(systemProvider)
         .when(
-          data: (SystemState data) => Scaffold(
-            appBar: appBar(data),
-            floatingActionButton: FloatingActionButton(
-              onPressed: () {},
-              child: Icon(Icons.add),
-            ),
-            body: Container(
-              padding: const EdgeInsets.all(16),
-              constraints: BoxConstraints.expand(),
-              child: SingleChildScrollView(
-                child: data.isMarkdownView
-                    ? MarkdownWidget(
-                        markdown: Markdown.fromString(
-                          ref
-                                  .watch(memoProvider(data.currentMemoUuid))
-                                  .content ??
-                              '',
-                        ),
-                      )
-                    : TextFormField(
-                        onChanged: (text) => ref
-                            .read(memoProvider(data.currentMemoUuid).notifier)
-                            .updateContent(text),
-                        decoration: InputDecoration(border: InputBorder.none),
-                        maxLines: null,
-                        autofocus: true,
-                        keyboardType: TextInputType.multiline,
-                        initialValue: ref
-                            .watch(memoProvider(data.currentMemoUuid))
-                            .content,
-                      ),
+          data: (SystemState data) {
+            if (data.currentMemoUuid == null) {
+              Future(() {
+                ref
+                    .read(memoProvider(data.currentMemoUuid).notifier)
+                    .initialize()
+                    .then((uuid) {
+                      if (uuid != null) {
+                        ref
+                            .read(systemProvider.notifier)
+                            .updateCurrentMemoUuid(uuid);
+                      }
+                    });
+              });
+            }
+
+            return Scaffold(
+              appBar: appBar(data),
+              floatingActionButton: FloatingActionButton(
+                onPressed: () {},
+                child: Icon(Icons.add),
               ),
-            ),
-          ),
+              body: Container(
+                padding: const EdgeInsets.all(8),
+                constraints: BoxConstraints.expand(),
+                child: SingleChildScrollView(
+                  child: data.isMarkdownView
+                      ? MarkdownWidget(
+                          markdown: Markdown.fromString(
+                            ref
+                                    .watch(memoProvider(data.currentMemoUuid))
+                                    .content ??
+                                '',
+                          ),
+                        )
+                      : TextFormField(
+                          // TODO: 保存の回数を減らしたい
+                          onChanged: (text) => ref
+                              .read(memoProvider(data.currentMemoUuid).notifier)
+                              .updateContent(text),
+                          decoration: InputDecoration(border: InputBorder.none),
+                          maxLines: null,
+                          autofocus: true,
+                          keyboardType: TextInputType.multiline,
+                          initialValue: ref
+                              .watch(memoProvider(data.currentMemoUuid))
+                              .content,
+                        ),
+                ),
+              ),
+            );
+          },
           error: (Object error, StackTrace stackTrace) {
             Logger().e('$error\n$stackTrace');
             return Scaffold(appBar: appBar(null));
