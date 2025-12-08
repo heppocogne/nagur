@@ -8,6 +8,19 @@ import 'package:nagur/l10n/app_localizations.dart';
 import 'package:nagur/model/memo.dart';
 import 'package:nagur/model/system.dart';
 
+void _createNewMemo(BuildContext context, WidgetRef ref) {
+  final uuid = ref.watch(
+    systemProvider.select((s) => s.value?.currentMemoUuid),
+  );
+  if (uuid == null) {
+    Logger().e('current uuid == null');
+  }
+  var memo = MemoNotifier.createNew();
+  ref.read(memoProvider(uuid).notifier).replaceWith(memo);
+  Logger().d('new uuid=${memo.uuid}');
+  ref.read(systemProvider.notifier).updateCurrentMemoUuid(memo.uuid);
+}
+
 class MainView extends ConsumerWidget {
   const MainView({super.key});
 
@@ -18,11 +31,21 @@ class MainView extends ConsumerWidget {
     return systemAsync.when(
       loading: () =>
           const Scaffold(body: Center(child: CircularProgressIndicator())),
-      error: (err, stack) {
-        Logger().e('$err\n$stack');
+      error: (err, _) {
+        Logger().e('$err');
         return Scaffold(body: Center(child: Text('Error: $err')));
       },
       data: (system) {
+        // NOTE: nullの場合は新規作成
+        if (ref.watch(systemProvider.select((s) => s.value?.currentMemoUuid)) ==
+            null) {
+          Future(() {
+            if (context.mounted) {
+              _createNewMemo(context, ref);
+            }
+          });
+        }
+
         return Scaffold(
           appBar: AppBar(
             leading: IconButton(
@@ -30,7 +53,10 @@ class MainView extends ConsumerWidget {
               onPressed: () {},
               icon: const Icon(Icons.menu),
             ),
-            title: MemoTitle(uuid: system.currentMemoUuid),
+            title: MemoTitle(
+              key: ValueKey(system.currentMemoUuid),
+              uuid: system.currentMemoUuid,
+            ),
             centerTitle: true,
             backgroundColor: Colors.blue,
             foregroundColor: Colors.white,
@@ -47,7 +73,10 @@ class MainView extends ConsumerWidget {
                   height: 24,
                 ),
               ),
-              MemoFavoriteButton(uuid: system.currentMemoUuid),
+              MemoFavoriteButton(
+                key: ValueKey(system.currentMemoUuid),
+                uuid: system.currentMemoUuid,
+              ),
               IconButton(
                 // TODO: 実装する
                 onPressed: () {},
@@ -56,8 +85,10 @@ class MainView extends ConsumerWidget {
             ],
           ),
           floatingActionButton: FloatingActionButton(
-            // TODO: 実装する
-            onPressed: () {},
+            onPressed: () {
+              // NOTE: 現在のファイルは保存済みの想定
+              _createNewMemo(context, ref);
+            },
             child: Icon(Icons.add),
           ),
           body: MemoEditor(
@@ -183,8 +214,8 @@ class _MemoEditorState extends ConsumerState<MemoEditor> {
 
     return memoAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (err, stack) {
-        Logger().e('$err\n$stack');
+      error: (err, _) {
+        Logger().e('$err');
         return Center(child: Text('Error loading memo: $err'));
       },
       data: (memo) {
@@ -201,13 +232,35 @@ class _MemoEditorState extends ConsumerState<MemoEditor> {
           );
         }
 
+        final uuid = ref.watch(
+          systemProvider.select((s) => s.value?.currentMemoUuid),
+        );
+        Logger().d('uuid=$uuid');
+        Logger().d('widget.uuid=${widget.uuid}');
+
         return Padding(
           padding: const EdgeInsets.all(8),
           child: TextField(
             controller: _contentController,
-            onChanged: (text) => ref
-                .read(memoProvider(widget.uuid).notifier)
-                .updateContent(text),
+            onChanged: (text) async {
+              if (ref.watch(
+                    memoProvider(widget.uuid).select((s) => s.value?.uuid),
+                  ) ==
+                  null) {
+                ref
+                    .read(memoProvider(widget.uuid).notifier)
+                    .updateUuid(widget.uuid!);
+              }
+              if (ref.watch(
+                    memoProvider(widget.uuid).select((s) => s.value?.title),
+                  ) ==
+                  null) {
+                await ref
+                    .read(memoProvider(widget.uuid).notifier)
+                    .updateTitle(L10n.of(context)!.untitled);
+              }
+              ref.read(memoProvider(widget.uuid).notifier).updateContent(text);
+            },
             decoration: const InputDecoration(border: InputBorder.none),
             maxLines: null,
             autofocus: true,

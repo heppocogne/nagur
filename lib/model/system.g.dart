@@ -53,7 +53,7 @@ final class SystemProvider extends $AsyncNotifierProvider<System, SystemState> {
   System create() => System();
 }
 
-String _$systemHash() => r'9b2b9ae991ffd09acef0e1b74783227dfa06ee2b';
+String _$systemHash() => r'77535bea002d848b1da8a74951980c88a169a5bb';
 
 abstract class _$System extends $AsyncNotifier<SystemState> {
   FutureOr<SystemState> build();

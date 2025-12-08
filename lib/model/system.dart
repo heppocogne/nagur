@@ -50,15 +50,6 @@ class SystemState {
 class System extends _$System {
   @override
   Future<SystemState> build() async {
-    return await _initialize();
-  }
-
-  Future<File> _getSystemFile() async {
-    final directory = await getApplicationSupportDirectory();
-    return File('${directory.path}/system.json');
-  }
-
-  Future<SystemState> _initialize() async {
     state = AsyncValue.loading();
 
     final file = await _getSystemFile();
@@ -85,6 +76,11 @@ class System extends _$System {
     );
     state = AsyncValue.data(system);
     return system;
+  }
+
+  static Future<File> _getSystemFile() async {
+    final directory = await getApplicationSupportDirectory();
+    return File('${directory.path}/system.json');
   }
 
   Future<void> save() async {

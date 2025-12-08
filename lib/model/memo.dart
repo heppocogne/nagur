@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+//import 'package:logger/logger.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
@@ -48,12 +49,16 @@ class Memo {
 @riverpod
 class MemoNotifier extends _$MemoNotifier {
   Future<File?> _getMemoFile() async {
+    final directory = await getApplicationSupportDirectory();
+    Directory newDir = Directory('${directory.path}/documents');
+    if (!await newDir.exists()) {
+      await newDir.create();
+    }
+
     if (uuid == null) {
       return null;
     }
-
-    final directory = await getApplicationSupportDirectory();
-    return File('${directory.path}/$uuid.json');
+    return File('${newDir.path}/$uuid.json');
   }
 
   @override
@@ -68,18 +73,25 @@ class MemoNotifier extends _$MemoNotifier {
       }
     }
 
+    return createNew();
+  }
+
+  static Memo createNew() {
     return Memo(uuid: Uuid().v4());
   }
 
   Future<void> save() async {
     if (state.isLoading || state.hasError) return;
-    final currentState = state.requireValue;
-    final file = await _getMemoFile();
 
-    final newState = currentState.copyWith(updated: DateTime.now());
+    final newState = state.requireValue.copyWith(updated: DateTime.now());
+    final file = await _getMemoFile();
     await file!.writeAsString(jsonEncode(newState.toJson()));
 
     state = AsyncData(newState);
+  }
+
+  void updateUuid(String uuid) {
+    state = AsyncData(state.requireValue.copyWith(uuid: uuid));
   }
 
   Future<void> updateTitle(String title) async {
@@ -94,6 +106,12 @@ class MemoNotifier extends _$MemoNotifier {
 
     state = AsyncData(state.requireValue.copyWith(content: content));
     await save();
+  }
+
+  void replaceWith(Memo memo) {
+    if (state.isLoading || state.hasError) return;
+
+    state = AsyncData(memo);
   }
 
   Future<void> toggleFavorite() async {

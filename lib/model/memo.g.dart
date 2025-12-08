@@ -70,7 +70,7 @@ final class MemoNotifierProvider
   }
 }
 
-String _$memoNotifierHash() => r'a3c5f0073fe993a40b316563e8b6f6810e424875';
+String _$memoNotifierHash() => r'04a1428dd0379b7a3004ad06a1b1dcc916cd60c7';
 
 final class MemoNotifierFamily extends $Family
     with
