@@ -126,6 +126,36 @@ abstract class L10n {
   /// In ja, this message translates to:
   /// **'削除'**
   String get delete;
+
+  /// No description provided for @favorite.
+  ///
+  /// In ja, this message translates to:
+  /// **'お気に入り'**
+  String get favorite;
+
+  /// No description provided for @history.
+  ///
+  /// In ja, this message translates to:
+  /// **'履歴'**
+  String get history;
+
+  /// No description provided for @trashBox.
+  ///
+  /// In ja, this message translates to:
+  /// **'ゴミ箱'**
+  String get trashBox;
+
+  /// No description provided for @settings.
+  ///
+  /// In ja, this message translates to:
+  /// **'設定'**
+  String get settings;
+
+  /// No description provided for @appInformation.
+  ///
+  /// In ja, this message translates to:
+  /// **'アプリ情報'**
+  String get appInformation;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

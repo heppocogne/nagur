@@ -22,4 +22,19 @@ class L10nEn extends L10n {
 
   @override
   String get delete => 'Delete';
+
+  @override
+  String get favorite => 'Favorite';
+
+  @override
+  String get history => 'History';
+
+  @override
+  String get trashBox => 'Trash Box';
+
+  @override
+  String get settings => 'Settings';
+
+  @override
+  String get appInformation => 'App Information';
 }

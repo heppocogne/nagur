@@ -4,5 +4,10 @@
     "untitled": "Untitled",
     "deleteConfirmation": "Would you like to delete this memo?",
     "cancel": "Cancel",
-    "delete": "Delete"
+    "delete": "Delete",
+    "favorite": "Favorite",
+    "history": "History",
+    "trashBox": "Trash Box",
+    "settings": "Settings",
+    "appInformation": "App Information"
 }

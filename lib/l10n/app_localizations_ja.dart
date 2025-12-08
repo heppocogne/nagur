@@ -22,4 +22,19 @@ class L10nJa extends L10n {
 
   @override
   String get delete => '削除';
+
+  @override
+  String get favorite => 'お気に入り';
+
+  @override
+  String get history => '履歴';
+
+  @override
+  String get trashBox => 'ゴミ箱';
+
+  @override
+  String get settings => '設定';
+
+  @override
+  String get appInformation => 'アプリ情報';
 }

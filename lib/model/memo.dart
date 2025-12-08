@@ -64,6 +64,7 @@ class MemoNotifier extends _$MemoNotifier {
     return createNew();
   }
 
+  // TODO: ソフトデリートにする(設定された期間だけゴミ箱に保持)
   Future<bool> delete() async {
     if (state.isLoading || state.hasError) return false;
 

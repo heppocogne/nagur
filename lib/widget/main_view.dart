@@ -42,7 +42,7 @@ Future<void> _afterDelete(BuildContext context, WidgetRef ref) async {
     if (context.mounted) {
       _createNewMemo(context, ref);
     } else {
-      Logger().e('context is not mountted');
+      Logger().e('context is not mounted');
     }
   } else {
     final latestHistory = historyList.last;
@@ -79,11 +79,6 @@ class MainView extends ConsumerWidget {
 
         return Scaffold(
           appBar: AppBar(
-            leading: IconButton(
-              // TODO: 実装する
-              onPressed: () {},
-              icon: const Icon(Icons.menu),
-            ),
             title: MemoTitle(
               key: ValueKey(system.currentMemoUuid),
               uuid: system.currentMemoUuid,
@@ -149,6 +144,86 @@ class MainView extends ConsumerWidget {
                 icon: const Icon(Icons.delete_outline),
               ),
             ],
+          ),
+          drawer: Drawer(
+            child: ListView(
+              padding: EdgeInsets.zero,
+              children: [
+                SizedBox(
+                  height: 64.0,
+                  child: DrawerHeader(
+                    decoration: BoxDecoration(color: Colors.blue),
+                    child: Text(
+                      L10n.of(context)!.appTitle,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+                ListTile(
+                  title: Row(
+                    children: [
+                      Icon(Icons.star),
+                      Text(L10n.of(context)!.favorite),
+                    ],
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    // TODO: お気に入り画面を開く
+                  },
+                ),
+                ListTile(
+                  title: Row(
+                    children: [
+                      Icon(Icons.history),
+                      Text(L10n.of(context)!.history),
+                    ],
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    // TODO: 履歴画面を開く
+                  },
+                ),
+                ListTile(
+                  title: Row(
+                    children: [
+                      Icon(Icons.delete_outline),
+                      Text(L10n.of(context)!.trashBox),
+                    ],
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    // TODO: ゴミ箱画面を開く
+                  },
+                ),
+                ListTile(
+                  title: Row(
+                    children: [
+                      Icon(Icons.settings),
+                      Text(L10n.of(context)!.settings),
+                    ],
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    // TODO: 設定画面を開く
+                  },
+                ),
+                ListTile(
+                  title: Row(
+                    children: [
+                      Icon(Icons.info),
+                      Text(L10n.of(context)!.appInformation),
+                    ],
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    // TODO: アプリ情報画面を開く
+                  },
+                ),
+              ],
+            ),
           ),
           floatingActionButton: FloatingActionButton(
             onPressed: () {
