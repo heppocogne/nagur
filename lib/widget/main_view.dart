@@ -1,36 +1,61 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logger/logger.dart';
 
 import 'package:nagur/l10n/app_localizations.dart';
 import 'package:nagur/model/memo.dart';
 import 'package:nagur/model/system.dart';
 
-class MainView extends ConsumerWidget {
+class MainView extends ConsumerStatefulWidget {
   const MainView({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    String title = L10n.of(context)!.untitled;
-    String content = '';
-    ref.watch(systemProvider).whenData((system) {
-      ref.watch(memoProvider(system.currentMemoUuid)).whenData((memo) {
-        if (memo.title != null) {
-          title = memo.title!;
-        }
-        if (memo.content != null) {
-          content = memo.content!;
-        }
-      });
-    });
+  ConsumerState<ConsumerStatefulWidget> createState() {
+    return _MainViewState();
+  }
+}
 
+class _MainViewState extends ConsumerState {
+  @override
+  void initState() async {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ref
+        .watch(systemProvider)
+        .when(
+          data: (SystemState data) {},
+          error: (Object error, StackTrace stackTrace) {},
+          loading: () {},
+        );
+    /*
+    String uuid;
+    ref.watch(systemProvider).whenData((systemState) async {
+      if (systemState.currentMemoUuid == null) {
+        uuid = ref.watch(memoProvider(null)).uuid;
+        ref.read(systemProvider.notifier).updateCurrentMemoUuid(uuid);
+      } else {
+        uuid = systemState.currentMemoUuid!;
+      }
+      Logger().d('uuid=$uuid');
+      await ref.watch(memoProvider(uuid).notifier).load();
+    });
+    */
+
+    /*
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(onPressed: () {}, icon: Icon(Icons.menu)),
         centerTitle: true,
-        title: TextFormField(initialValue: title),
+        title: TextFormField(initialValue: ref.watch(memoProvider())),
         actions: [
           IconButton(onPressed: () {}, icon: Icon(Icons.arrow_downward)),
-          IconButton(onPressed: () {}, icon: Icon(Icons.star)),
+          IconButton(
+            onPressed: () {},
+            icon: Icon(isFavarite ? Icons.star : Icons.star_border),
+          ),
           IconButton(onPressed: () {}, icon: Icon(Icons.delete)),
         ],
       ),
@@ -52,5 +77,6 @@ class MainView extends ConsumerWidget {
         ),
       ),
     );
+    */
   }
 }
