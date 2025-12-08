@@ -24,14 +24,14 @@ void _createNewMemo(BuildContext context, WidgetRef ref) {
   ref.read(systemProvider.notifier).updateCurrentMemoUuid(memo.uuid);
 }
 
-Future<void> _deleteCurrentMemo(BuildContext context, WidgetRef ref) async {
+Future<bool> _deleteCurrentMemo(BuildContext context, WidgetRef ref) async {
   final uuid = ref.watch(
     systemProvider.select((s) => s.value?.currentMemoUuid),
   );
   if (uuid == null) {
     Logger().e('current uuid == null');
   }
-  await ref.read(memoProvider(uuid).notifier).delete();
+  return await ref.read(memoProvider(uuid).notifier).delete();
 }
 
 Future<void> _afterDelete(BuildContext context, WidgetRef ref) async {
@@ -109,7 +109,6 @@ class MainView extends ConsumerWidget {
                 uuid: system.currentMemoUuid,
               ),
               IconButton(
-                // TODO: 実装する
                 onPressed: () {
                   if (system.showDeleteConfirmation) {
                     showDialog(
@@ -127,12 +126,10 @@ class MainView extends ConsumerWidget {
                               onPressed: () {
                                 Navigator.of(context).pop();
                                 _deleteCurrentMemo(context, ref).then((
-                                  _,
+                                  deleted,
                                 ) async {
-                                  if (context.mounted) {
+                                  if (deleted && context.mounted) {
                                     await _afterDelete(context, ref);
-                                  } else {
-                                    Logger().e('context is not mounted');
                                   }
                                 });
                               },
@@ -142,11 +139,9 @@ class MainView extends ConsumerWidget {
                       },
                     );
                   } else {
-                    _deleteCurrentMemo(context, ref).then((_) async {
-                      if (context.mounted) {
+                    _deleteCurrentMemo(context, ref).then((deleted) async {
+                      if (deleted && context.mounted) {
                         await _afterDelete(context, ref);
-                      } else {
-                        Logger().e('context is not mounted');
                       }
                     });
                   }

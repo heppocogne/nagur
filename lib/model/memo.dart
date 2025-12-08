@@ -64,10 +64,13 @@ class MemoNotifier extends _$MemoNotifier {
     return createNew();
   }
 
-  Future<void> delete() async {
-    if (state.isLoading || state.hasError) return;
+  Future<bool> delete() async {
+    if (state.isLoading || state.hasError) return false;
 
     final file = await _getMemoFile();
+    if (!(await file?.exists() ?? false)) {
+      return false;
+    }
     await file!.delete();
 
     state = AsyncData(
@@ -79,6 +82,7 @@ class MemoNotifier extends _$MemoNotifier {
         content: null,
       ),
     );
+    return true;
   }
 
   void replaceWith(Memo memo) {
