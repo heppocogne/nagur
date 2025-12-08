@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:logger/logger.dart';
 
+import 'package:nagur/l10n/app_localizations.dart';
 import 'package:nagur/model/memo.dart';
 import 'package:nagur/model/system.dart';
 
@@ -84,6 +85,12 @@ class _MemoTitleState extends ConsumerState<MemoTitle> {
   void initState() {
     super.initState();
     _titleController = TextEditingController();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _titleController.text = L10n.of(context)!.untitled;
   }
 
   @override

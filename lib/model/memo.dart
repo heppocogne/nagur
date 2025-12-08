@@ -47,7 +47,11 @@ class Memo {
 
 @riverpod
 class MemoNotifier extends _$MemoNotifier {
-  Future<File> _getMemoFile() async {
+  Future<File?> _getMemoFile() async {
+    if (uuid == null) {
+      return null;
+    }
+
     final directory = await getApplicationSupportDirectory();
     return File('${directory.path}/$uuid.json');
   }
@@ -56,7 +60,7 @@ class MemoNotifier extends _$MemoNotifier {
   Future<Memo> build(String? uuid) async {
     final file = await _getMemoFile();
 
-    if (await file.exists()) {
+    if (file != null && await file.exists()) {
       final jsonString = await file.readAsString();
       if (jsonString.isNotEmpty) {
         final json = jsonDecode(jsonString);
@@ -73,7 +77,7 @@ class MemoNotifier extends _$MemoNotifier {
     final file = await _getMemoFile();
 
     final newState = currentState.copyWith(updated: DateTime.now());
-    await file.writeAsString(jsonEncode(newState.toJson()));
+    await file!.writeAsString(jsonEncode(newState.toJson()));
 
     state = AsyncData(newState);
   }
