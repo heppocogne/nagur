@@ -1,5 +1,8 @@
 {
     "@@locale": "en",
     "appTitle": "Nagur: A Scribble Memo Pad",
-    "untitled": "Untitled"
+    "untitled": "Untitled",
+    "deleteConfirmation": "Would you like to delete this memo?",
+    "cancel": "Cancel",
+    "delete": "Delete"
 }

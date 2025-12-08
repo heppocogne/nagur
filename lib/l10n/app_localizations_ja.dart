@@ -13,4 +13,13 @@ class L10nJa extends L10n {
 
   @override
   String get untitled => '無題';
+
+  @override
+  String get deleteConfirmation => 'このメモを削除しますか?';
+
+  @override
+  String get cancel => 'キャンセル';
+
+  @override
+  String get delete => '削除';
 }

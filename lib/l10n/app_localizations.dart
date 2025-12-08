@@ -108,6 +108,24 @@ abstract class L10n {
   /// In ja, this message translates to:
   /// **'無題'**
   String get untitled;
+
+  /// No description provided for @deleteConfirmation.
+  ///
+  /// In ja, this message translates to:
+  /// **'このメモを削除しますか?'**
+  String get deleteConfirmation;
+
+  /// No description provided for @cancel.
+  ///
+  /// In ja, this message translates to:
+  /// **'キャンセル'**
+  String get cancel;
+
+  /// No description provided for @delete.
+  ///
+  /// In ja, this message translates to:
+  /// **'削除'**
+  String get delete;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

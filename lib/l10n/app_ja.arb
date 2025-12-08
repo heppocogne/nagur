@@ -1,5 +1,8 @@
 {
     "@@locale": "ja",
     "appTitle": "Nagur: 殴り書きメモ帳",
-    "untitled": "無題"
+    "untitled": "無題",
+    "deleteConfirmation": "このメモを削除しますか?",
+    "cancel": "キャンセル",
+    "delete": "削除"
 }

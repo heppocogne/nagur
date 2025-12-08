@@ -13,4 +13,13 @@ class L10nEn extends L10n {
 
   @override
   String get untitled => 'Untitled';
+
+  @override
+  String get deleteConfirmation => 'Would you like to delete this memo?';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get delete => 'Delete';
 }

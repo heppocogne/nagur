@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_md/flutter_md.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,6 +23,21 @@ void _createNewMemo(BuildContext context, WidgetRef ref) {
   ref.read(systemProvider.notifier).updateCurrentMemoUuid(memo.uuid);
 }
 
+Future<void> _deleteCurrentMemo(BuildContext context, WidgetRef ref) async {
+  final uuid = ref.watch(
+    systemProvider.select((s) => s.value?.currentMemoUuid),
+  );
+  if (uuid == null) {
+    Logger().e('current uuid == null');
+  }
+  await ref.read(memoProvider(uuid).notifier).delete();
+}
+
+void _afterDelete(BuildContext context, WidgetRef ref) {
+  // NOTE: 仮実装。最後に編集したメモを表示するようにし、無ければ新規作成。
+  _createNewMemo(context, ref);
+}
+
 class MainView extends ConsumerWidget {
   const MainView({super.key});
 
@@ -42,6 +59,8 @@ class MainView extends ConsumerWidget {
           Future(() {
             if (context.mounted) {
               _createNewMemo(context, ref);
+            } else {
+              Logger().e('context is not mounted');
             }
           });
         }
@@ -79,7 +98,45 @@ class MainView extends ConsumerWidget {
               ),
               IconButton(
                 // TODO: 実装する
-                onPressed: () {},
+                onPressed: () {
+                  if (system.showDeleteConfirmation) {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text(L10n.of(context)!.deleteConfirmation),
+                          actions: <Widget>[
+                            OutlinedButton(
+                              child: Text(L10n.of(context)!.cancel),
+                              onPressed: () => Navigator.of(context).pop(),
+                            ),
+                            FilledButton(
+                              child: Text(L10n.of(context)!.delete),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                                _deleteCurrentMemo(context, ref).then((_) {
+                                  if (context.mounted) {
+                                    _afterDelete(context, ref);
+                                  } else {
+                                    Logger().e('context is not mounted');
+                                  }
+                                });
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  } else {
+                    _deleteCurrentMemo(context, ref).then((_) {
+                      if (context.mounted) {
+                        _afterDelete(context, ref);
+                      } else {
+                        Logger().e('context is not mounted');
+                      }
+                    });
+                  }
+                },
                 icon: const Icon(Icons.delete_outline),
               ),
             ],
