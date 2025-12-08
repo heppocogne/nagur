@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:logger/logger.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
@@ -11,7 +10,7 @@ part 'memo.g.dart';
 @JsonSerializable()
 class Memo {
   @JsonKey(includeFromJson: false, includeToJson: false)
-  final String uuid;
+  final String? uuid;
 
   final DateTime updated;
   final String? title;
@@ -19,13 +18,12 @@ class Memo {
   final bool isFavorite;
 
   Memo({
-    String? uuid,
+    this.uuid,
     DateTime? updated,
     this.title,
     this.content,
     this.isFavorite = false,
-  }) : uuid = uuid ?? const Uuid().v4(),
-       updated = updated ?? DateTime.now();
+  }) : updated = updated ?? DateTime.now();
 
   factory Memo.fromJson(Map<String, dynamic> json) => _$MemoFromJson(json);
   Map<String, dynamic> toJson() => _$MemoToJson(this);
@@ -49,63 +47,58 @@ class Memo {
 
 @riverpod
 class MemoNotifier extends _$MemoNotifier {
-  Future<File?> _getMemoFile() async {
-    if (uuid != null) {
-      final directory = await getApplicationSupportDirectory();
-      return File('${directory.path}/$uuid.json');
-    } else {
-      return null;
-    }
+  Future<File> _getMemoFile() async {
+    final directory = await getApplicationSupportDirectory();
+    return File('${directory.path}/$uuid.json');
   }
 
   @override
-  Memo build(String? uuid) {
-    if (uuid != null) {
-      return Memo(uuid: uuid);
-    } else {
-      return Memo(uuid: Uuid().v4());
-    }
-  }
-
-  Future<String> initialize() async {
+  Future<Memo> build(String? uuid) async {
     final file = await _getMemoFile();
-    if (file != null && await file.exists()) {
+
+    if (await file.exists()) {
       final jsonString = await file.readAsString();
-      Logger().d('jsonString=$jsonString');
       if (jsonString.isNotEmpty) {
-        final memo = Memo.fromJson(jsonDecode(jsonString));
-        state = memo.copyWith(uuid: uuid);
+        final json = jsonDecode(jsonString);
+        return Memo.fromJson(json).copyWith(uuid: uuid);
       }
-    } else {
-      Logger().d('file not found');
-      state = state.copyWith(uuid: uuid);
     }
 
-    return state.uuid;
+    return Memo(uuid: Uuid().v4());
   }
 
   Future<void> save() async {
+    if (state.isLoading || state.hasError) return;
+    final currentState = state.requireValue;
     final file = await _getMemoFile();
-    if (file != null) {
-      state = state.copyWith(updated: DateTime.now());
-      await file.writeAsString(jsonEncode(state.toJson()));
-    } else {
-      Logger().w('file is null, skip saving');
-    }
+
+    final newState = currentState.copyWith(updated: DateTime.now());
+    await file.writeAsString(jsonEncode(newState.toJson()));
+
+    state = AsyncData(newState);
   }
 
   Future<void> updateTitle(String title) async {
-    state = state.copyWith(title: title);
+    if (state.isLoading || state.hasError) return;
+
+    state = AsyncData(state.requireValue.copyWith(title: title));
     await save();
   }
 
   Future<void> updateContent(String content) async {
-    state = state.copyWith(content: content);
+    if (state.isLoading || state.hasError) return;
+
+    state = AsyncData(state.requireValue.copyWith(content: content));
     await save();
   }
 
   Future<void> toggleFavorite() async {
-    state = state.copyWith(isFavorite: !state.isFavorite);
+    if (state.isLoading || state.hasError) return;
+
+    final currentState = state.requireValue;
+    state = AsyncData(
+      currentState.copyWith(isFavorite: !currentState.isFavorite),
+    );
     await save();
   }
 }

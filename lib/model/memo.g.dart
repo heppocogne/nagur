@@ -32,7 +32,8 @@ Map<String, dynamic> _$MemoToJson(Memo instance) => <String, dynamic>{
 @ProviderFor(MemoNotifier)
 const memoProvider = MemoNotifierFamily._();
 
-final class MemoNotifierProvider extends $NotifierProvider<MemoNotifier, Memo> {
+final class MemoNotifierProvider
+    extends $AsyncNotifierProvider<MemoNotifier, Memo> {
   const MemoNotifierProvider._({
     required MemoNotifierFamily super.from,
     required String? super.argument,
@@ -58,14 +59,6 @@ final class MemoNotifierProvider extends $NotifierProvider<MemoNotifier, Memo> {
   @override
   MemoNotifier create() => MemoNotifier();
 
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(Memo value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<Memo>(value),
-    );
-  }
-
   @override
   bool operator ==(Object other) {
     return other is MemoNotifierProvider && other.argument == argument;
@@ -77,10 +70,17 @@ final class MemoNotifierProvider extends $NotifierProvider<MemoNotifier, Memo> {
   }
 }
 
-String _$memoNotifierHash() => r'c63ff48179fdec78e892d09192280535a53fc41f';
+String _$memoNotifierHash() => r'8f9b1243ad6367706a1db13490d04c69928fe8eb';
 
 final class MemoNotifierFamily extends $Family
-    with $ClassFamilyOverride<MemoNotifier, Memo, Memo, Memo, String?> {
+    with
+        $ClassFamilyOverride<
+          MemoNotifier,
+          AsyncValue<Memo>,
+          Memo,
+          FutureOr<Memo>,
+          String?
+        > {
   const MemoNotifierFamily._()
     : super(
         retry: null,
@@ -97,21 +97,21 @@ final class MemoNotifierFamily extends $Family
   String toString() => r'memoProvider';
 }
 
-abstract class _$MemoNotifier extends $Notifier<Memo> {
+abstract class _$MemoNotifier extends $AsyncNotifier<Memo> {
   late final _$args = ref.$arg as String?;
   String? get uuid => _$args;
 
-  Memo build(String? uuid);
+  FutureOr<Memo> build(String? uuid);
   @$mustCallSuper
   @override
   void runBuild() {
     final created = build(_$args);
-    final ref = this.ref as $Ref<Memo, Memo>;
+    final ref = this.ref as $Ref<AsyncValue<Memo>, Memo>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<Memo, Memo>,
-              Memo,
+              AnyNotifier<AsyncValue<Memo>, Memo>,
+              AsyncValue<Memo>,
               Object?,
               Object?
             >;
