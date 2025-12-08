@@ -71,15 +71,16 @@ class MemoNotifier extends _$MemoNotifier {
     final file = await _getMemoFile();
     if (file != null && await file.exists()) {
       final jsonString = await file.readAsString();
+      Logger().d('jsonString=$jsonString');
       if (jsonString.isNotEmpty) {
-        var memo = Memo.fromJson(jsonDecode(jsonString));
+        final memo = Memo.fromJson(jsonDecode(jsonString));
         state = memo.copyWith(uuid: uuid);
       }
     } else {
+      Logger().d('file not found');
       state = state.copyWith(uuid: uuid);
     }
 
-    Logger().d('uuid=$uuid');
     return state.uuid;
   }
 

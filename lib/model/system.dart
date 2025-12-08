@@ -53,16 +53,19 @@ class System extends _$System {
     return await _initialize();
   }
 
+  Future<File> _getSystemFile() async {
+    final directory = await getApplicationSupportDirectory();
+    return File('${directory.path}/system.json');
+  }
+
   Future<SystemState> _initialize() async {
     state = AsyncValue.loading();
 
-    final directory = await getApplicationDocumentsDirectory();
-    final file = File('${directory.path}/system.json');
-
+    final file = await _getSystemFile();
     if (await file.exists()) {
       final jsonString = await file.readAsString();
       if (jsonString.isNotEmpty) {
-        var system = SystemState.fromJson(jsonDecode(jsonString));
+        final system = SystemState.fromJson(jsonDecode(jsonString));
         state = AsyncValue.data(system);
         return system;
       }
@@ -76,7 +79,7 @@ class System extends _$System {
       language = Language.en.name;
     }
 
-    var system = SystemState(
+    final system = SystemState(
       language: language,
       exportLocation: (await getApplicationDocumentsDirectory()).path,
     );
@@ -86,9 +89,7 @@ class System extends _$System {
 
   Future<void> save() async {
     final currentState = await future;
-
-    final directory = await getApplicationSupportDirectory();
-    final file = File('${directory.path}/system.json');
+    final file = await _getSystemFile();
 
     await file.writeAsString(jsonEncode(currentState.toJson()), flush: true);
   }

@@ -9,7 +9,10 @@ import 'package:nagur/model/memo.dart';
 import 'package:nagur/model/system.dart';
 
 class MainView extends ConsumerStatefulWidget {
-  const MainView({super.key});
+  MainView({super.key});
+
+  final titleController = TextEditingController();
+  final contentController = TextEditingController();
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() {
@@ -18,6 +21,13 @@ class MainView extends ConsumerStatefulWidget {
 }
 
 class _MainViewState extends ConsumerState<MainView> {
+  @override
+  void dispose() {
+    widget.titleController.dispose();
+    widget.contentController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     AppBar appBar(SystemState? system) {
@@ -28,11 +38,8 @@ class _MainViewState extends ConsumerState<MainView> {
         centerTitle: true,
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
-        title: TextFormField(
-          initialValue: system != null
-              ? ref.watch(memoProvider(system.currentMemoUuid)).title ??
-                    L10n.of(context)!.untitled
-              : L10n.of(context)!.untitled,
+        title: TextField(
+          controller: widget.titleController,
           style: const TextStyle(color: Colors.white),
           cursorColor: Colors.white,
           decoration: const InputDecoration(
@@ -82,15 +89,20 @@ class _MainViewState extends ConsumerState<MainView> {
         .when(
           data: (SystemState data) {
             if (data.currentMemoUuid == null) {
+              final defaultTitle = L10n.of(context)!.untitled;
               Future(() {
                 ref
                     .read(memoProvider(data.currentMemoUuid).notifier)
                     .initialize()
-                    .then(
-                      (uuid) => ref
+                    .then((uuid) {
+                      ref
                           .read(systemProvider.notifier)
-                          .updateCurrentMemoUuid(uuid),
-                    );
+                          .updateCurrentMemoUuid(uuid);
+                      widget.titleController.text =
+                          ref.watch(memoProvider(uuid)).title ?? defaultTitle;
+                      widget.contentController.text =
+                          ref.watch(memoProvider(uuid)).content ?? '';
+                    });
               });
             }
 
@@ -113,7 +125,8 @@ class _MainViewState extends ConsumerState<MainView> {
                                 '',
                           ),
                         )
-                      : TextFormField(
+                      : TextField(
+                          controller: widget.contentController,
                           // TODO: 保存の回数を減らしたい
                           onChanged: (text) => ref
                               .read(memoProvider(data.currentMemoUuid).notifier)
@@ -122,9 +135,6 @@ class _MainViewState extends ConsumerState<MainView> {
                           maxLines: null,
                           autofocus: true,
                           keyboardType: TextInputType.multiline,
-                          initialValue: ref
-                              .watch(memoProvider(data.currentMemoUuid))
-                              .content,
                         ),
                 ),
               ),

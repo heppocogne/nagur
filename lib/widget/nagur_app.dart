@@ -40,7 +40,7 @@ class _NagurAppState extends ConsumerState {
       localizationsDelegates: L10n.localizationsDelegates,
       supportedLocales: L10n.supportedLocales,
       //locale: Locale('en'),
-      home: const MainView(),
+      home: MainView(),
     );
   }
 }
