@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:logger/logger.dart';
 
+import 'package:nagur/widget/history_view.dart';
 import 'package:nagur/l10n/app_localizations.dart';
 import 'package:nagur/model/history.dart';
 import 'package:nagur/model/memo.dart';
@@ -170,7 +171,7 @@ class MainView extends ConsumerWidget {
                     ],
                   ),
                   onTap: () {
-                    Navigator.pop(context);
+                    Navigator.of(context).pop(context);
                     // TODO: お気に入り画面を開く
                   },
                 ),
@@ -182,8 +183,11 @@ class MainView extends ConsumerWidget {
                     ],
                   ),
                   onTap: () {
-                    Navigator.pop(context);
-                    // TODO: 履歴画面を開く
+                    Navigator.of(context).pop(context);
+                    // 履歴画面を開く
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => HistoryView()),
+                    );
                   },
                 ),
                 ListTile(
@@ -194,7 +198,7 @@ class MainView extends ConsumerWidget {
                     ],
                   ),
                   onTap: () {
-                    Navigator.pop(context);
+                    Navigator.of(context).pop(context);
                     // TODO: ゴミ箱画面を開く
                   },
                 ),
@@ -206,7 +210,7 @@ class MainView extends ConsumerWidget {
                     ],
                   ),
                   onTap: () {
-                    Navigator.pop(context);
+                    Navigator.of(context).pop(context);
                     // TODO: 設定画面を開く
                   },
                 ),
@@ -218,7 +222,7 @@ class MainView extends ConsumerWidget {
                     ],
                   ),
                   onTap: () {
-                    Navigator.pop(context);
+                    Navigator.of(context).pop(context);
                     // TODO: アプリ情報画面を開く
                   },
                 ),
