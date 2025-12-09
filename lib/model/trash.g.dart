@@ -33,7 +33,7 @@ final class TrashListNotifierProvider
   TrashListNotifier create() => TrashListNotifier();
 }
 
-String _$trashListNotifierHash() => r'04b26e37d04279249a02ff2b50f13212375d2fa6';
+String _$trashListNotifierHash() => r'e397c32274015b53fe5a610a696183cfbe995c6d';
 
 abstract class _$TrashListNotifier extends $AsyncNotifier<List<Trash>> {
   FutureOr<List<Trash>> build();

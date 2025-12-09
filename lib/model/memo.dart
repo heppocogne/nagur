@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:json_annotation/json_annotation.dart';
+import 'package:logger/web.dart';
 import 'package:path_provider/path_provider.dart';
 //import 'package:logger/logger.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -83,13 +84,22 @@ class MemoNotifier extends _$MemoNotifier {
   }
 
   Future<void> save() async {
-    if (state.isLoading || state.hasError) return;
+    if (state.hasError) return;
 
-    final newState = state.requireValue.copyWith(updated: DateTime.now());
-    final file = await _getMemoFile();
-    await file!.writeAsString(jsonEncode(newState.toJson()));
+    final link = ref.keepAlive();
+    try {
+      if (state.isLoading) {
+        await future;
+      }
 
-    state = AsyncData(newState);
+      final newState = state.requireValue.copyWith(updated: DateTime.now());
+      final file = await _getMemoFile();
+      await file!.writeAsString(jsonEncode(newState.toJson()));
+
+      state = AsyncData(newState);
+    } finally {
+      link.close();
+    }
   }
 
   Future<void> toggleFavorite() async {
@@ -121,9 +131,31 @@ class MemoNotifier extends _$MemoNotifier {
   }
 
   Future<void> restore() async {
-    if (state.isLoading || state.hasError) return;
+    if (state.hasError) return;
 
-    state = AsyncData(state.requireValue.copyWith(deletedAt: null));
+    final link = ref.keepAlive();
+    try {
+      if (state.isLoading) {
+        await future;
+      }
+
+      // copyWithではnullを反映できないので新規作成
+      Logger().d('create new state');
+      var current = state.requireValue;
+      state = AsyncData(
+        Memo(
+          uuid: current.uuid,
+          title: current.title,
+          content: current.content,
+          isFavorite: current.isFavorite,
+          updated: DateTime.now(),
+          deletedAt: null,
+        ),
+      );
+    } finally {
+      link.close();
+    }
+
     await save();
   }
 

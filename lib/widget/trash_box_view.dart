@@ -6,7 +6,6 @@ import 'package:intl/intl.dart';
 import 'package:nagur/l10n/app_localizations.dart';
 import 'package:nagur/model/trash.dart';
 import 'package:nagur/model/memo.dart';
-import 'package:nagur/model/system.dart'; // Though not directly used in this view, often useful for navigation or other context.
 
 class TrashBoxView extends ConsumerWidget {
   TrashBoxView({super.key});
@@ -33,6 +32,7 @@ class TrashBoxView extends ConsumerWidget {
               children: list.reversed
                   .map<Widget>(
                     (elem) => Card(
+                      key: ValueKey(elem.uuid),
                       child: Container(
                         padding: EdgeInsets.all(8),
                         height: 56,
