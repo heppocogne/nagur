@@ -162,6 +162,54 @@ abstract class L10n {
   /// In ja, this message translates to:
   /// **'ソースコード:'**
   String get sourceCode;
+
+  /// No description provided for @confirmBeforeDelete.
+  ///
+  /// In ja, this message translates to:
+  /// **'削除前に確認する'**
+  String get confirmBeforeDelete;
+
+  /// No description provided for @deletedMemoRetentionDays.
+  ///
+  /// In ja, this message translates to:
+  /// **'削除されたメモの保存期間:'**
+  String get deletedMemoRetentionDays;
+
+  /// No description provided for @days.
+  ///
+  /// In ja, this message translates to:
+  /// **'日'**
+  String get days;
+
+  /// No description provided for @fontSize.
+  ///
+  /// In ja, this message translates to:
+  /// **'フォントサイズ'**
+  String get fontSize;
+
+  /// No description provided for @theme.
+  ///
+  /// In ja, this message translates to:
+  /// **'テーマ'**
+  String get theme;
+
+  /// No description provided for @themeModeSystem.
+  ///
+  /// In ja, this message translates to:
+  /// **'システムのテーマ'**
+  String get themeModeSystem;
+
+  /// No description provided for @themeModeLight.
+  ///
+  /// In ja, this message translates to:
+  /// **'ライト'**
+  String get themeModeLight;
+
+  /// No description provided for @themeModeDark.
+  ///
+  /// In ja, this message translates to:
+  /// **'ダーク'**
+  String get themeModeDark;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

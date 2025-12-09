@@ -39,6 +39,33 @@ class _NagurAppState extends ConsumerState {
       title: L10n.of(context)?.appTitle ?? 'Nagur',
       localizationsDelegates: L10n.localizationsDelegates,
       supportedLocales: L10n.supportedLocales,
+      theme: ThemeData(
+        textTheme: TextTheme(
+          bodyMedium: TextStyle(
+            fontSize: ref
+                .watch(systemProvider)
+                .requireValue
+                .fontSize
+                .toDouble(),
+          ),
+        ),
+      ),
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+        primarySwatch: Colors.indigo,
+        textTheme: TextTheme(
+          bodyMedium: TextStyle(
+            fontSize: ref
+                .watch(systemProvider)
+                .requireValue
+                .fontSize
+                .toDouble(),
+          ),
+        ),
+      ),
+      themeMode: ThemeMode.values.byName(
+        ref.watch(systemProvider).requireValue.themeMode,
+      ),
       //locale: Locale('en'),
       home: MainView(),
     );

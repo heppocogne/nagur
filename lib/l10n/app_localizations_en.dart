@@ -40,4 +40,29 @@ class L10nEn extends L10n {
 
   @override
   String get sourceCode => 'Source Code:';
+
+  @override
+  String get confirmBeforeDelete =>
+      'Show confirmation dialog before delete a memo';
+
+  @override
+  String get deletedMemoRetentionDays => 'Deleted memos can be restored for:';
+
+  @override
+  String get days => 'Days';
+
+  @override
+  String get fontSize => 'Font size';
+
+  @override
+  String get theme => 'Theme';
+
+  @override
+  String get themeModeSystem => 'Use system theme';
+
+  @override
+  String get themeModeLight => 'Light';
+
+  @override
+  String get themeModeDark => 'Dark';
 }

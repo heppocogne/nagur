@@ -5,8 +5,8 @@ import 'package:url_launcher/link.dart';
 
 import 'package:nagur/l10n/app_localizations.dart';
 
-class AWppInfoView extends StatelessWidget {
-  AWppInfoView({super.key});
+class AppInfoView extends StatelessWidget {
+  AppInfoView({super.key});
 
   final repoUrl = 'https://github.com/heppocogne/nagur';
   final rgb0011 = Color.from(red: 0, green: 0, blue: 1.0, alpha: 1.0);

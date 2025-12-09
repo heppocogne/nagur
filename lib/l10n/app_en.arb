@@ -10,5 +10,13 @@
     "trashBox": "Trash Box",
     "settings": "Settings",
     "appInformation": "App Information",
-    "sourceCode": "Source Code:"
+    "sourceCode": "Source Code:",
+    "confirmBeforeDelete": "Show confirmation dialog before delete a memo",
+    "deletedMemoRetentionDays": "Deleted memos can be restored for:",
+    "days": "Days",
+    "fontSize": "Font size",
+    "theme": "Theme",
+    "themeModeSystem": "Use system theme",
+    "themeModeLight": "Light",
+    "themeModeDark": "Dark"
 }

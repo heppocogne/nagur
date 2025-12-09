@@ -10,10 +10,10 @@ SystemState _$SystemStateFromJson(Map<String, dynamic> json) => SystemState(
   currentMemoUuid: json['currentMemoUuid'] as String?,
   showDeleteConfirmation: json['showDeleteConfirmation'] as bool? ?? true,
   isMarkdownView: json['isMarkdownView'] as bool? ?? false,
-  language: json['language'] as String,
   exportLocation: json['exportLocation'] as String,
   deletedMemoRetentionDays:
       (json['deletedMemoRetentionDays'] as num?)?.toInt() ?? 30,
+  fontSize: (json['fontSize'] as num?)?.toInt() ?? 14,
 );
 
 Map<String, dynamic> _$SystemStateToJson(SystemState instance) =>
@@ -21,9 +21,9 @@ Map<String, dynamic> _$SystemStateToJson(SystemState instance) =>
       'currentMemoUuid': instance.currentMemoUuid,
       'showDeleteConfirmation': instance.showDeleteConfirmation,
       'isMarkdownView': instance.isMarkdownView,
-      'language': instance.language,
       'exportLocation': instance.exportLocation,
       'deletedMemoRetentionDays': instance.deletedMemoRetentionDays,
+      'fontSize': instance.fontSize,
     };
 
 // **************************************************************************
@@ -56,7 +56,7 @@ final class SystemProvider extends $AsyncNotifierProvider<System, SystemState> {
   System create() => System();
 }
 
-String _$systemHash() => r'e7e0d6c0314ee41255f27992c6dbeaf424c41d87';
+String _$systemHash() => r'fdbf4c4234c7c4cb244f1d78b0908b4a9a4873d9';
 
 abstract class _$System extends $AsyncNotifier<SystemState> {
   FutureOr<SystemState> build();

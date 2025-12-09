@@ -13,6 +13,7 @@ import 'package:nagur/l10n/app_localizations.dart';
 import 'package:nagur/model/history.dart';
 import 'package:nagur/model/memo.dart';
 import 'package:nagur/model/system.dart';
+import 'package:nagur/widget/setting_view.dart';
 import 'package:nagur/widget/trash_box_view.dart';
 
 void _createNewMemo(BuildContext context, WidgetRef ref) {
@@ -216,8 +217,10 @@ class MainView extends ConsumerWidget {
                     ],
                   ),
                   onTap: () {
-                    Navigator.of(context).pop(context);
-                    // TODO: 設定画面を開く
+                    // 設定画面を開く
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => SettingView()),
+                    );
                   },
                 ),
                 ListTile(
@@ -230,7 +233,7 @@ class MainView extends ConsumerWidget {
                   onTap: () {
                     // アプリ情報画面を開く
                     Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => AWppInfoView()),
+                      MaterialPageRoute(builder: (context) => AppInfoView()),
                     );
                   },
                 ),
@@ -395,6 +398,13 @@ class _MemoEditorState extends ConsumerState<MemoEditor> {
           padding: const EdgeInsets.all(8),
           child: TextField(
             controller: _contentController,
+            style: TextStyle(
+              fontSize: ref.watch(
+                systemProvider.select(
+                  (s) => s.value?.fontSize.toDouble() ?? 14.0,
+                ),
+              ),
+            ),
             onChanged: (text) async {
               if (ref.watch(
                     memoProvider(widget.uuid).select((s) => s.value?.uuid),

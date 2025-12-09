@@ -40,4 +40,28 @@ class L10nJa extends L10n {
 
   @override
   String get sourceCode => 'ソースコード:';
+
+  @override
+  String get confirmBeforeDelete => '削除前に確認する';
+
+  @override
+  String get deletedMemoRetentionDays => '削除されたメモの保存期間:';
+
+  @override
+  String get days => '日';
+
+  @override
+  String get fontSize => 'フォントサイズ';
+
+  @override
+  String get theme => 'テーマ';
+
+  @override
+  String get themeModeSystem => 'システムのテーマ';
+
+  @override
+  String get themeModeLight => 'ライト';
+
+  @override
+  String get themeModeDark => 'ダーク';
 }

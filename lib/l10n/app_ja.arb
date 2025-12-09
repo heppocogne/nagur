@@ -10,5 +10,13 @@
     "trashBox": "ゴミ箱",
     "settings": "設定",
     "appInformation": "アプリ情報",
-    "sourceCode": "ソースコード:"
+    "sourceCode": "ソースコード:",
+    "confirmBeforeDelete": "削除前に確認する",
+    "deletedMemoRetentionDays": "削除されたメモの保存期間:",
+    "days": "日",
+    "fontSize": "フォントサイズ",
+    "theme": "テーマ",
+    "themeModeSystem": "システムのテーマ",
+    "themeModeLight": "ライト",
+    "themeModeDark": "ダーク"
 }

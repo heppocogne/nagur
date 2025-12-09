@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/material.dart' show ThemeMode;
 import 'package:logger/logger.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:path_provider/path_provider.dart';
@@ -15,17 +16,23 @@ class SystemState {
   final String? currentMemoUuid;
   final bool showDeleteConfirmation;
   final bool isMarkdownView;
-  final String language;
   final String exportLocation;
   final int deletedMemoRetentionDays;
+  final int fontSize;
+  final String themeMode;
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  final String? language;
 
   SystemState({
     this.currentMemoUuid,
     this.showDeleteConfirmation = true,
     this.isMarkdownView = false,
-    required this.language,
+    this.language,
     required this.exportLocation,
     this.deletedMemoRetentionDays = 30,
+    this.fontSize = 14,
+    this.themeMode = 'system',
   });
 
   factory SystemState.fromJson(Map<String, dynamic> json) =>
@@ -39,6 +46,8 @@ class SystemState {
     String? language,
     String? exportLocation,
     int? deletedMemoRetentionDays,
+    int? fontSize,
+    String? themeMode,
   }) {
     return SystemState(
       currentMemoUuid: currentMemoUuid ?? this.currentMemoUuid,
@@ -49,6 +58,8 @@ class SystemState {
       exportLocation: exportLocation ?? this.exportLocation,
       deletedMemoRetentionDays:
           deletedMemoRetentionDays ?? this.deletedMemoRetentionDays,
+      fontSize: fontSize ?? this.fontSize,
+      themeMode: themeMode ?? this.themeMode,
     );
   }
 }
@@ -64,7 +75,9 @@ class System extends _$System {
     if (await file.exists()) {
       final jsonString = await file.readAsString();
       if (jsonString.isNotEmpty) {
-        system = SystemState.fromJson(jsonDecode(jsonString));
+        system = SystemState.fromJson(
+          jsonDecode(jsonString),
+        ).copyWith(language: _getLanguage());
       } else {
         system = await _createDefaultSystemState();
       }
@@ -93,14 +106,14 @@ class System extends _$System {
   Future<void> updateCurrentMemoUuid(String? uuid) async {
     final currentState = await future;
 
-    state = AsyncValue.data(currentState.copyWith(currentMemoUuid: uuid));
+    state = AsyncData(currentState.copyWith(currentMemoUuid: uuid));
     await save();
   }
 
   Future<void> toggleDeleteConfirmation() async {
     final currentState = await future;
 
-    state = AsyncValue.data(
+    state = AsyncData(
       currentState.copyWith(
         showDeleteConfirmation: !currentState.showDeleteConfirmation,
       ),
@@ -110,23 +123,46 @@ class System extends _$System {
 
   Future<void> toggleMarkdownView() async {
     final currentState = await future;
-    state = AsyncValue.data(
+
+    state = AsyncData(
       currentState.copyWith(isMarkdownView: !currentState.isMarkdownView),
     );
     await save();
   }
 
-  Future<SystemState> _createDefaultSystemState() async {
-    String locale = Platform.localeName;
-    String language;
-    if (locale.startsWith(Language.ja.name)) {
-      language = Language.ja.name;
-    } else {
-      language = Language.en.name;
-    }
+  Future<void> updateDeletedMemoRetentionDays(int days) async {
+    final currentState = await future;
 
+    state = AsyncData(currentState.copyWith(deletedMemoRetentionDays: days));
+    await save();
+  }
+
+  Future<void> updateFontSize(int s) async {
+    final currentState = await future;
+
+    state = AsyncData(currentState.copyWith(fontSize: s));
+    await save();
+  }
+
+  Future<void> updateThemeMode(ThemeMode mode) async {
+    final currentState = await future;
+
+    state = AsyncData(currentState.copyWith(themeMode: mode.name));
+    await save();
+  }
+
+  String _getLanguage() {
+    String locale = Platform.localeName;
+    if (locale.startsWith(Language.ja.name)) {
+      return Language.ja.name;
+    } else {
+      return Language.en.name;
+    }
+  }
+
+  Future<SystemState> _createDefaultSystemState() async {
     return SystemState(
-      language: language,
+      language: _getLanguage(),
       exportLocation: (await getApplicationDocumentsDirectory()).path,
     );
   }
