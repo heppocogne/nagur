@@ -52,7 +52,7 @@ class TrashListNotifier extends _$TrashListNotifier {
           continue;
         }
         final memo = Memo.fromJson(jsonDecode(jsonString));
-        if (memo.deletedAt != null || memo.deletedAt != null) {
+        if (memo.deletedAt == null) {
           continue;
         }
 
