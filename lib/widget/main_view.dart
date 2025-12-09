@@ -7,6 +7,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:logger/logger.dart';
 
 import 'package:nagur/widget/history_view.dart';
+import 'package:nagur/widget/favorite_view.dart';
 import 'package:nagur/l10n/app_localizations.dart';
 import 'package:nagur/model/history.dart';
 import 'package:nagur/model/memo.dart';
@@ -172,7 +173,10 @@ class MainView extends ConsumerWidget {
                   ),
                   onTap: () {
                     Navigator.of(context).pop(context);
-                    // TODO: お気に入り画面を開く
+                    //
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => FavoriteView()),
+                    );
                   },
                 ),
                 ListTile(
