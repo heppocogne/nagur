@@ -12,6 +12,7 @@ import 'package:nagur/l10n/app_localizations.dart';
 import 'package:nagur/model/history.dart';
 import 'package:nagur/model/memo.dart';
 import 'package:nagur/model/system.dart';
+import 'package:nagur/widget/trash_box_view.dart';
 
 void _createNewMemo(BuildContext context, WidgetRef ref) {
   final uuid = ref.watch(
@@ -172,8 +173,7 @@ class MainView extends ConsumerWidget {
                     ],
                   ),
                   onTap: () {
-                    Navigator.of(context).pop(context);
-                    //
+                    // お気に入り画面を開く
                     Navigator.of(context).push(
                       MaterialPageRoute(builder: (context) => FavoriteView()),
                     );
@@ -187,7 +187,6 @@ class MainView extends ConsumerWidget {
                     ],
                   ),
                   onTap: () {
-                    Navigator.of(context).pop(context);
                     // 履歴画面を開く
                     Navigator.of(context).push(
                       MaterialPageRoute(builder: (context) => HistoryView()),
@@ -202,8 +201,10 @@ class MainView extends ConsumerWidget {
                     ],
                   ),
                   onTap: () {
-                    Navigator.of(context).pop(context);
-                    // TODO: ゴミ箱画面を開く
+                    // ゴミ箱画面を開く
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => TrashBoxView()),
+                    );
                   },
                 ),
                 ListTile(

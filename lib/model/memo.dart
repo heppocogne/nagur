@@ -120,6 +120,13 @@ class MemoNotifier extends _$MemoNotifier {
     state = AsyncData(state.requireValue.copyWith(uuid: uuid));
   }
 
+  Future<void> restore() async {
+    if (state.isLoading || state.hasError) return;
+
+    state = AsyncData(state.requireValue.copyWith(deletedAt: null));
+    await save();
+  }
+
   Future<File?> _getMemoFile() async {
     final directory = await getApplicationSupportDirectory();
     Directory newDir = Directory('${directory.path}/documents');
