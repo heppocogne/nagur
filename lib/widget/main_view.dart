@@ -5,6 +5,7 @@ import 'package:flutter_md/flutter_md.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:logger/logger.dart';
+import 'package:nagur/widget/app_info_view.dart';
 
 import 'package:nagur/widget/history_view.dart';
 import 'package:nagur/widget/favorite_view.dart';
@@ -227,8 +228,10 @@ class MainView extends ConsumerWidget {
                     ],
                   ),
                   onTap: () {
-                    Navigator.of(context).pop(context);
-                    // TODO: アプリ情報画面を開く
+                    // アプリ情報画面を開く
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => AWppInfoView()),
+                    );
                   },
                 ),
               ],

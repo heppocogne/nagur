@@ -156,6 +156,12 @@ abstract class L10n {
   /// In ja, this message translates to:
   /// **'アプリ情報'**
   String get appInformation;
+
+  /// No description provided for @sourceCode.
+  ///
+  /// In ja, this message translates to:
+  /// **'ソースコード:'**
+  String get sourceCode;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

@@ -37,4 +37,7 @@ class L10nJa extends L10n {
 
   @override
   String get appInformation => 'アプリ情報';
+
+  @override
+  String get sourceCode => 'ソースコード:';
 }
