@@ -19,6 +19,8 @@ class HistoryView extends ConsumerWidget {
           icon: Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).pop(),
         ),
+        backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
         title: Text(L10n.of(context)!.history),
       ),
       body: ref
@@ -34,29 +36,35 @@ class HistoryView extends ConsumerWidget {
                         height: 56,
                         child: Row(
                           children: [
-                            Column(
-                              children: [
-                                Row(
-                                  children: [
-                                    Text(
-                                      elem.title,
-                                      maxLines: 1,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        overflow: TextOverflow.ellipsis,
+                            Expanded(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          elem.title,
+                                          maxLines: 1,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
                                       ),
-                                    ),
-                                    Text(formatter.format(elem.updated)),
-                                  ],
-                                ),
-                                Text(
-                                  elem.content,
-                                  maxLines: 1,
-                                  style: TextStyle(
-                                    overflow: TextOverflow.ellipsis,
+                                      Text(formatter.format(elem.updated)),
+                                    ],
                                   ),
-                                ),
-                              ],
+                                  Text(
+                                    elem.content,
+                                    maxLines: 1,
+                                    style: TextStyle(
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                             /*
                             IconButton(
