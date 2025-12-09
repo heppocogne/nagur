@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:nagur/l10n/app_localizations.dart';
 import 'package:nagur/model/favorite.dart';
 import 'package:nagur/model/memo.dart';
+import 'package:nagur/model/system.dart';
 
 class FavoriteView extends ConsumerWidget {
   FavoriteView({super.key});
@@ -31,58 +32,66 @@ class FavoriteView extends ConsumerWidget {
             data: (list) => ListView(
               children: list.reversed
                   .map<Widget>(
-                    (elem) => Card(
-                      child: Container(
-                        padding: EdgeInsets.all(8),
-                        height: 56,
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: Text(
-                                          elem.title,
-                                          maxLines: 1,
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            overflow: TextOverflow.ellipsis,
+                    (elem) => GestureDetector(
+                      child: Card(
+                        child: Container(
+                          padding: EdgeInsets.all(8),
+                          height: 56,
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            elem.title,
+                                            maxLines: 1,
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      Text(formatter.format(elem.updated)),
-                                    ],
-                                  ),
-                                  Text(
-                                    elem.content,
-                                    maxLines: 1,
-                                    style: TextStyle(
-                                      overflow: TextOverflow.ellipsis,
+                                        Text(formatter.format(elem.updated)),
+                                      ],
                                     ),
-                                  ),
-                                ],
+                                    Text(
+                                      elem.content,
+                                      maxLines: 1,
+                                      style: TextStyle(
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                            IconButton(
-                              icon:
-                                  ref.watch(
-                                    memoProvider(
-                                      elem.uuid,
-                                    ).select((s) => s.value!.isFavorite),
-                                  )
-                                  ? Icon(Icons.star)
-                                  : Icon(Icons.star_border),
-                              onPressed: () => ref
-                                  .read(memoProvider(elem.uuid).notifier)
-                                  .toggleFavorite(),
-                            ),
-                          ],
+                              IconButton(
+                                icon:
+                                    ref.watch(
+                                      memoProvider(
+                                        elem.uuid,
+                                      ).select((s) => s.value!.isFavorite),
+                                    )
+                                    ? Icon(Icons.star)
+                                    : Icon(Icons.star_border),
+                                onPressed: () => ref
+                                    .read(memoProvider(elem.uuid).notifier)
+                                    .toggleFavorite(),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
+                      onTap: () {
+                        ref
+                            .read(systemProvider.notifier)
+                            .updateCurrentMemoUuid(elem.uuid);
+                        Navigator.of(context).pop();
+                      },
                     ),
                   )
                   .toList(),

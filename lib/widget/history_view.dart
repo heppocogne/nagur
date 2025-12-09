@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import 'package:nagur/l10n/app_localizations.dart';
 import 'package:nagur/model/history.dart';
+import 'package:nagur/model/system.dart';
 
 class HistoryView extends ConsumerWidget {
   HistoryView({super.key});
@@ -30,43 +31,44 @@ class HistoryView extends ConsumerWidget {
             data: (list) => ListView(
               children: list.reversed
                   .map<Widget>(
-                    (elem) => Card(
-                      child: Container(
-                        padding: EdgeInsets.all(8),
-                        height: 56,
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: Text(
-                                          elem.title,
-                                          maxLines: 1,
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            overflow: TextOverflow.ellipsis,
+                    (elem) => GestureDetector(
+                      child: Card(
+                        child: Container(
+                          padding: EdgeInsets.all(8),
+                          height: 56,
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            elem.title,
+                                            maxLines: 1,
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      Text(formatter.format(elem.updated)),
-                                    ],
-                                  ),
-                                  Text(
-                                    elem.content,
-                                    maxLines: 1,
-                                    style: TextStyle(
-                                      overflow: TextOverflow.ellipsis,
+                                        Text(formatter.format(elem.updated)),
+                                      ],
                                     ),
-                                  ),
-                                ],
+                                    Text(
+                                      elem.content,
+                                      maxLines: 1,
+                                      style: TextStyle(
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                            /*
+                              /*
                             IconButton(
                               icon: Icon(Icons.delete_outline),
                               onPressed: () {
@@ -121,16 +123,23 @@ class HistoryView extends ConsumerWidget {
                               },
                             ),
                              */
-                          ],
+                            ],
+                          ),
                         ),
                       ),
+                      onTap: () {
+                        ref
+                            .read(systemProvider.notifier)
+                            .updateCurrentMemoUuid(elem.uuid);
+                        Navigator.of(context).pop();
+                      },
                     ),
                   )
                   .toList(),
             ),
             error: (err, _) {
               Logger().e('$err');
-              return Center(child: Text('Error loading favorite memo: $err'));
+              return Center(child: Text('Error loading memo history: $err'));
             },
           ),
     );
