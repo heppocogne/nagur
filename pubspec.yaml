@@ -104,3 +104,11 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+flutter_launcher_icons:
+  android: true
+  image_path: "assets/nagur_512.png"
+  min_sdk_android: 21
+  windows:
+    generate: true
+    image_path: "assets/nagur_48.png"
+    icon_size: 48
