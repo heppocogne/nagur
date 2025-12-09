@@ -13,6 +13,9 @@ Memo _$MemoFromJson(Map<String, dynamic> json) => Memo(
   title: json['title'] as String?,
   content: json['content'] as String?,
   isFavorite: json['isFavorite'] as bool? ?? false,
+  deletedAt: json['deletedAt'] == null
+      ? null
+      : DateTime.parse(json['deletedAt'] as String),
 );
 
 Map<String, dynamic> _$MemoToJson(Memo instance) => <String, dynamic>{
@@ -20,6 +23,7 @@ Map<String, dynamic> _$MemoToJson(Memo instance) => <String, dynamic>{
   'title': instance.title,
   'content': instance.content,
   'isFavorite': instance.isFavorite,
+  'deletedAt': instance.deletedAt?.toIso8601String(),
 };
 
 // **************************************************************************
@@ -70,7 +74,7 @@ final class MemoNotifierProvider
   }
 }
 
-String _$memoNotifierHash() => r'c5b76796a8b6f24f18d727c477d711fadf2c3150';
+String _$memoNotifierHash() => r'ecbf30f46eab746fe60dcb76d184b2e8d571b1fe';
 
 final class MemoNotifierFamily extends $Family
     with

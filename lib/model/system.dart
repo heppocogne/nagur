@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:logger/logger.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -16,6 +17,7 @@ class SystemState {
   final bool isMarkdownView;
   final String language;
   final String exportLocation;
+  final int deletedMemoRetentionDays;
 
   SystemState({
     this.currentMemoUuid,
@@ -23,6 +25,7 @@ class SystemState {
     this.isMarkdownView = false,
     required this.language,
     required this.exportLocation,
+    this.deletedMemoRetentionDays = 30,
   });
 
   factory SystemState.fromJson(Map<String, dynamic> json) =>
@@ -35,6 +38,7 @@ class SystemState {
     bool? isMarkdownView,
     String? language,
     String? exportLocation,
+    int? deletedMemoRetentionDays,
   }) {
     return SystemState(
       currentMemoUuid: currentMemoUuid ?? this.currentMemoUuid,
@@ -43,6 +47,8 @@ class SystemState {
       isMarkdownView: isMarkdownView ?? this.isMarkdownView,
       language: language ?? this.language,
       exportLocation: exportLocation ?? this.exportLocation,
+      deletedMemoRetentionDays:
+          deletedMemoRetentionDays ?? this.deletedMemoRetentionDays,
     );
   }
 }
@@ -51,30 +57,23 @@ class SystemState {
 class System extends _$System {
   @override
   Future<SystemState> build() async {
-    state = AsyncValue.loading();
+    state = const AsyncValue.loading();
 
+    SystemState system;
     final file = await _getSystemFile();
     if (await file.exists()) {
       final jsonString = await file.readAsString();
       if (jsonString.isNotEmpty) {
-        final system = SystemState.fromJson(jsonDecode(jsonString));
-        state = AsyncValue.data(system);
-        return system;
+        system = SystemState.fromJson(jsonDecode(jsonString));
+      } else {
+        system = await _createDefaultSystemState();
       }
-    }
-
-    String locale = Platform.localeName;
-    String language;
-    if (locale.startsWith(Language.ja.name)) {
-      language = Language.ja.name;
     } else {
-      language = Language.en.name;
+      system = await _createDefaultSystemState();
     }
 
-    final system = SystemState(
-      language: language,
-      exportLocation: (await getApplicationDocumentsDirectory()).path,
-    );
+    await _cleanupDeletedMemos(system.deletedMemoRetentionDays);
+
     state = AsyncValue.data(system);
     return system;
   }
@@ -115,5 +114,53 @@ class System extends _$System {
       currentState.copyWith(isMarkdownView: !currentState.isMarkdownView),
     );
     await save();
+  }
+
+  Future<SystemState> _createDefaultSystemState() async {
+    String locale = Platform.localeName;
+    String language;
+    if (locale.startsWith(Language.ja.name)) {
+      language = Language.ja.name;
+    } else {
+      language = Language.en.name;
+    }
+
+    return SystemState(
+      language: language,
+      exportLocation: (await getApplicationDocumentsDirectory()).path,
+    );
+  }
+
+  Future<void> _cleanupDeletedMemos(int retentionDays) async {
+    final dir = await getApplicationSupportDirectory();
+    final docDir = Directory('${dir.path}/documents');
+
+    if (!await docDir.exists()) {
+      return;
+    }
+
+    final threshold = DateTime.now().subtract(Duration(days: retentionDays));
+
+    for (final entry in docDir.listSync()) {
+      if (entry is File && entry.path.endsWith('.json')) {
+        final file = File(entry.path);
+        try {
+          final jsonString = await file.readAsString();
+          if (jsonString.isEmpty) {
+            continue;
+          }
+          final json = jsonDecode(jsonString) as Map<String, dynamic>;
+          if (json.containsKey('deletedAt') && json['deletedAt'] != null) {
+            final deletedAt = DateTime.parse(json['deletedAt'] as String);
+            if (deletedAt.isBefore(threshold)) {
+              await file.delete();
+              Logger().i('Memo deleted: ${file.path}');
+            }
+          }
+        } catch (e) {
+          Logger().e('Error on deleting ${file.path}: $e');
+        }
+      }
+    }
   }
 }

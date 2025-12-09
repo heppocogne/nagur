@@ -52,6 +52,9 @@ class HistoryListNotifier extends _$HistoryListNotifier {
           continue;
         }
         final memo = Memo.fromJson(jsonDecode(jsonString));
+        if (memo.deletedAt != null) {
+          continue;
+        }
 
         final parts = entry.path.split(Platform.isWindows ? '\\' : '/');
         final filename = parts.last;

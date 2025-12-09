@@ -18,6 +18,7 @@ class Memo {
   final String? title;
   final String? content;
   final bool isFavorite;
+  final DateTime? deletedAt;
 
   Memo({
     this.uuid,
@@ -25,6 +26,7 @@ class Memo {
     this.title,
     this.content,
     this.isFavorite = false,
+    this.deletedAt,
   }) : updated = updated ?? DateTime.now();
 
   factory Memo.fromJson(Map<String, dynamic> json) => _$MemoFromJson(json);
@@ -34,6 +36,7 @@ class Memo {
     String? title,
     String? content,
     bool? isFavorite,
+    DateTime? deletedAt,
   }) {
     return Memo(
       uuid: uuid ?? this.uuid,
@@ -41,6 +44,7 @@ class Memo {
       title: title ?? this.title,
       content: content ?? this.content,
       isFavorite: isFavorite ?? this.isFavorite,
+      deletedAt: deletedAt ?? this.deletedAt,
     );
   }
 
@@ -64,25 +68,11 @@ class MemoNotifier extends _$MemoNotifier {
     return createNew();
   }
 
-  // TODO: ソフトデリートにする(設定された期間だけゴミ箱に保持)
   Future<bool> delete() async {
     if (state.isLoading || state.hasError) return false;
 
-    final file = await _getMemoFile();
-    if (!(await file?.exists() ?? false)) {
-      return false;
-    }
-    await file!.delete();
-
-    state = AsyncData(
-      state.requireValue.copyWith(
-        uuid: null,
-        isFavorite: false,
-        updated: null,
-        title: null,
-        content: null,
-      ),
-    );
+    state = AsyncData(state.requireValue.copyWith(deletedAt: DateTime.now()));
+    await save();
     return true;
   }
 
