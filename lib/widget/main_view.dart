@@ -5,8 +5,8 @@ import 'package:flutter_md/flutter_md.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:logger/logger.dart';
-import 'package:nagur/widget/app_info_view.dart';
 
+import 'package:nagur/widget/app_info_view.dart';
 import 'package:nagur/widget/history_view.dart';
 import 'package:nagur/widget/favorite_view.dart';
 import 'package:nagur/l10n/app_localizations.dart';
