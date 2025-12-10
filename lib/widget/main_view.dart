@@ -91,8 +91,9 @@ class MainView extends ConsumerWidget {
             centerTitle: true,
             backgroundColor: Colors.blue,
             foregroundColor: Colors.white,
-            actions: [
+            actions: <Widget>[
               IconButton(
+                padding: EdgeInsets.only(left: 8, right: 8),
                 onPressed: () {
                   ref.read(systemProvider.notifier).toggleMarkdownView();
                 },
@@ -109,6 +110,7 @@ class MainView extends ConsumerWidget {
                 uuid: system.currentMemoUuid,
               ),
               IconButton(
+                padding: EdgeInsets.only(left: 8, right: 8),
                 onPressed: () {
                   if (system.showDeleteConfirmation) {
                     showDialog(
@@ -149,6 +151,8 @@ class MainView extends ConsumerWidget {
                 icon: const Icon(Icons.delete_outline),
               ),
             ],
+            leadingWidth: 40,
+            titleSpacing: 8,
           ),
           drawer: Drawer(
             child: ListView(
@@ -322,6 +326,7 @@ class MemoFavoriteButton extends ConsumerWidget {
         false;
 
     return IconButton(
+      padding: EdgeInsets.only(left: 8, right: 8),
       onPressed: () {
         ref.read(memoProvider(uuid).notifier).toggleFavorite();
       },
