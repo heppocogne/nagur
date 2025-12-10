@@ -91,6 +91,7 @@ class FavoriteView extends ConsumerWidget {
                             .read(systemProvider.notifier)
                             .updateCurrentMemoUuid(elem.uuid);
                         Navigator.of(context).pop();
+                        Navigator.of(context).pop();
                       },
                     ),
                   )
