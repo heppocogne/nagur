@@ -271,17 +271,19 @@ class MemoTitle extends ConsumerStatefulWidget {
 
 class _MemoTitleState extends ConsumerState<MemoTitle> {
   late final TextEditingController _titleController;
-
-  @override
-  void initState() {
-    super.initState();
-    _titleController = TextEditingController();
-  }
+  bool _titleInitialized = false;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _titleController.text = L10n.of(context)!.untitled;
+    // Another exception was thrown: Each child must be laid out exactly once.が発生するため
+    if (!_titleInitialized) {
+      final initialTitle = ref.watch(memoProvider(widget.uuid)).value?.title;
+      _titleController = TextEditingController(
+        text: initialTitle ?? L10n.of(context)!.untitled,
+      );
+      _titleInitialized = true;
+    }
   }
 
   @override
@@ -295,8 +297,18 @@ class _MemoTitleState extends ConsumerState<MemoTitle> {
     ref.listen(
       memoProvider(widget.uuid).select((asyncValue) => asyncValue.value?.title),
       (previous, next) {
-        if (next != null && next != _titleController.text) {
-          _titleController.text = next;
+        final newTitle = next ?? L10n.of(context)!.untitled;
+        if (newTitle != _titleController.text) {
+          // NOTE: 入力中にカーソルが移動しないようにselectionを維持する
+          final oldSelection = _titleController.selection;
+          _titleController.text = newTitle;
+          if (oldSelection.start > newTitle.length) {
+            _titleController.selection = TextSelection.fromPosition(
+              TextPosition(offset: newTitle.length),
+            );
+          } else {
+            _titleController.selection = oldSelection;
+          }
         }
       },
     );
